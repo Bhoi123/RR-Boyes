@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Future Round Demo — Color Prediction (Demo Only)</title>
+  <style>
+    :root{--accent:#f97316;--bg1:#07102a;--muted:#94a3b8;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,var(--bg1) 0%, #071428 100%);color:#e6eef8}
+    .wrap{max-width:1000px;margin:30px auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ef4444);display:flex;align-items:center;justify-content:center;font-weight:800}
+    nav a{color:var(--muted);margin-left:14px;text-decoration:none}
+    .board{display:flex;gap:18px;margin-top:18px}
+    .left{flex:1}
+    .right{width:380px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    h1{margin:0 0 6px 0;font-size:22px}
+    .muted{color:var(--muted);font-size:13px}
+    .flex{display:flex;gap:10px;align-items:center}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ef4444);color:#061025;text-decoration:none;font-weight:700;cursor:pointer;border:none}
+    .small{padding:8px 10px;font-size:14px;border-radius:8px}
+    .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .tile{background:linear-gradient(180deg,#071025 0%, #08122a 100%);padding:14px;border-radius:10px;text-align:center;border:1px solid rgba(255,255,255,0.03)}
+    .tile strong{display:block;font-size:16px;margin-bottom:6px}
+    .balance{background:var(--glass);padding:12px;border-radius:10px;margin-bottom:12px}
+    .tx{font-size:13px;color:var(--muted);padding:8px;border-bottom:1px dashed rgba(255,255,255,0.02)}
+    .notice{background:rgba(255,87,87,0.06);padding:10px;border-radius:8px;color:#ffdede;border:1px solid rgba(255,87,87,0.08);margin-bottom:12px}
+    .rounds{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .round-card{padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03);min-width:180px}
+    .center{display:flex;justify-content:center;align-items:center;flex-direction:column}
+    input, select{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+    @media (max-width:900px){.board{flex-direction:column}.right{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">66</div>
+        <div>
+          <div style="font-weight:800">Future66 Demo</div>
+          <div class="muted" style="font-size:13px">Demo mode — No real money. UI + Future rounds simulation.</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#">Home</a>
+        <a href="#">Games</a>
+        <a href="#">Support</a>
+      </nav>
+    </header>
+
+    <div class="board">
+      <div class="left card">
+        <h1>Color Prediction — Future Round Demo</h1>
+        <div class="muted">यह केवल डेमो है — असली पेटीमेंट/वितरण नहीं है।</div>
+
+        <div style="margin-top:12px" class="rounds">
+          <div class="round-card" id="currentRoundCard">
+            <div class="muted">Current Round</div>
+            <div style="font-weight:700;font-size:18px" id="currentRoundId">#0</div>
+            <div style="margin-top:8px">Time Left: <span id="currentTimer">--:--</span></div>
+            <div class="muted" style="font-size:13px;margin-top:6px">Result: <span id="currentResult">—</span></div>
+          </div>
+
+          <div class="round-card" id="nextRoundCard">
+            <div class="muted">Next (Future)</div>
+            <div style="font-weight:700;font-size:18px" id="nextRoundId">#1</div>
+            <div style="margin-top:8px">Starts In: <span id="nextTimer">--:--</span></div>
+            <div class="muted" style="font-size:13px;margin-top:6px">Place bet for future round</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px" class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Play (Future allowed)</strong><div class="muted">Bet demo-only. हर bet की कीमत default ₹10</div></div>
+            <div class="muted">Round interval: <strong id="intervalLabel">60s</strong></div>
+          </div>
+
+          <div class="tiles" style="margin-top:12px" id="gameTiles">
+            <div class="tile">
+              <strong>Red</strong>
+              <div class="muted">Win payout: 1.8x</div>
+              <button class="btn small" onclick="placeBet('Red')">Bet Red (Future)</button>
+            </div>
+            <div class="tile">
+              <strong>Blue</strong>
+              <div class="muted">Win payout: 1.8x</div>
+              <button class="btn small" onclick="placeBet('Blue')">Bet Blue (Future)</button>
+            </div>
+            <div class="tile">
+              <strong>Green</strong>
+              <div class="muted">Win payout: 1.8x</div>
+              <button class="btn small" onclick="placeBet('Green')">Bet Green (Future)</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Recent Results</strong></div>
+            <div class="muted">Demo data</div>
+          </div>
+          <div id="results" style="margin-top:10px"></div>
+        </div>
+
+      </div>
+
+      <div class="right card">
+        <div class="notice"><strong>Demo mode:</strong> Payments disabled. Do not enter real card or UPI details.</div>
+        <div class="balance">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="muted">Available Balance</div>
+              <div style="font-weight:800;font-size:20px">₹ <span id="balance">0.00</span></div>
+            </div>
+            <div>
+              <button class="btn" id="addFunds">Add ₹500</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:8px">
+          <div style="font-weight:700">Place & Track</div>
+          <select id="selectRound" style="margin-top:8px">
+            <!-- options populated by JS -->
+          </select>
+          <input id="betAmount" placeholder="Bet amount (demo)" value="10" style="margin-top:8px"/>
+          <button class="btn" style="width:100%;margin-top:8px" id="placeNowBtn">Place Now on Current</button>
+          <div class="muted" style="font-size:13px;margin-top:6px">या ऊपर के 'Bet Color (Future)' बटनों से next round में तुरंत bet कर सकते हैं।</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700;margin-bottom:6px">Transaction History</div>
+          <div id="txlist" style="max-height:320px;overflow:auto;background:transparent;border-radius:8px;padding:6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="muted">Disclaimer: यह एक शैक्षिक UI demo है। असली पैसे के लिए उपयोग न करें।</div>
+    </footer>
+  </div>
+
+  <script>
+    // Demo: Future rounds engine (client-only, no server, no payments)
+    const ROUND_INTERVAL = 60; // seconds per round
+    const PAYOUT_MULT = 1.8;
+    const DEFAULT_BET = 10;
+    const STORAGE_KEY = 'future66_demo_v1';
+
+    // state persisted in localStorage
+    const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if(!state.balance) state.balance = 0;
+    if(!state.history) state.history = [];
+    if(!state.rounds) state.rounds = []; // {id, startTs, result, bets: [{color,amount,ownerRoundId}]}
+
+    // initialize simple rolling rounds: keep current and next plus queue of future rounds (5)
+    function seedRounds(){
+      const now = Math.floor(Date.now()/1000);
+      if(state.rounds.length === 0){
+        // create starting round aligned to interval boundary
+        const base = Math.floor(now/ROUND_INTERVAL)*ROUND_INTERVAL + ROUND_INTERVAL;
+        for(let i=0;i<8;i++){
+          const r = { id: i+1, startTs: base + i*ROUND_INTERVAL, result: null, bets: [] };
+          state.rounds.push(r);
+        }
+        saveState();
+      }
+    }
+
+    function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+    // UI refs
+    const balanceEl = document.getElementById('balance');
+    const txlist = document.getElementById('txlist');
+    const resultsEl = document.getElementById('results');
+    const currentRoundIdEl = document.getElementById('currentRoundId');
+    const nextRoundIdEl = document.getElementById('nextRoundId');
+    const currentTimerEl = document.getElementById('currentTimer');
+    const nextTimerEl = document.getElementById('nextTimer');
+    const currentResultEl = document.getElementById('currentResult');
+    const selectRound = document.getElementById('selectRound');
+    const intervalLabel = document.getElementById('intervalLabel');
+
+    intervalLabel.textContent = ROUND_INTERVAL + 's';
+
+    // helpers
+    function formatTimeLeft(secs){
+      if(secs < 0) secs = 0;
+      const m = Math.floor(secs/60).toString().padStart(2,'0');
+      const s = Math.floor(secs%60).toString().padStart(2,'0');
+      return `${m}:${s}`;
+    }
+
+    function renderBalance(){ balanceEl.textContent = state.balance.toFixed(2); }
+
+    function renderTx(desc){
+      const d = document.createElement('div');
+      d.className = 'tx';
+      d.textContent = desc + ' · ' + new Date().toLocaleString();
+      txlist.prepend(d);
+    }
+
+    function renderResults(){
+      resultsEl.innerHTML = '';
+      const recent = state.history.slice().reverse().slice(0,12);
+      recent.forEach(r=>{
+        const el = document.createElement('div');
+        el.textContent = `Round #${r.roundId} → ${r.result} (${r.betsSummary || ''})`;
+        resultsEl.appendChild(el);
+      });
+    }
+
+    function renderRoundsList(){
+      selectRound.innerHTML = '';
+      state.rounds.forEach(r=>{
+        const opt = document.createElement('option');
+        const dt = new Date(r.startTs*1000);
+        opt.value = r.id;
+        opt.textContent = `#${r.id} — ${dt.toLocaleTimeString()}` + (r.result? ' (Settled)':' (Open)');
+        selectRound.appendChild(opt);
+      });
+    }
+
+    function ensureRoundsAhead(){
+      // keep at least 8 rounds ahead
+      const now = Math.floor(Date.now()/1000);
+      const last = state.rounds[state.rounds.length-1];
+      while(last && last.startTs - now < 7*ROUND_INTERVAL){
+        const nid = state.rounds.length + 1;
+        state.rounds.push({ id: nid, startTs: last.startTs + ROUND_INTERVAL, result:null, bets:[] });
+      }
+      saveState();
+    }
+
+    // placing bet for next/current round
+    function placeBet(color, targetRoundId){
+      const betAmt = Number(document.getElementById('betAmount').value) || DEFAULT_BET;
+      if(betAmt <= 0){ alert('Bet amount valid number chahiye'); return; }
+      if(state.balance < betAmt){ alert('Balance kam hai. Add funds.'); return; }
+      const rnd = state.rounds.find(r=>r.id==targetRoundId);
+      if(!rnd){ alert('Round nahin mila'); return; }
+      // cannot bet on settled rounds
+      const now = Math.floor(Date.now()/1000);
+      if(now >= rnd.startTs){ alert('Is round pe bet close ho chuka hai'); return; }
+      // deduct demo balance now and record pending bet
+      state.balance -= betAmt;
+      rnd.bets.push({ color, amount: betAmt });
+      renderTx(`Placed ₹${betAmt} on ${color} for round #${rnd.id} (pending)`);
+      saveState(); renderBalance(); renderRoundsList(); renderResults();
+    }
+
+    // auto-run rounds by timer
+    function tick(){
+      const now = Math.floor(Date.now()/1000);
+      // find current (first round with startTs > now) -> previous is currentRound
+      let idx = state.rounds.findIndex(r => r.startTs > now);
+      if(idx === -1) idx = state.rounds.length;
+      const currentIdx = Math.max(0, idx-1);
+      const current = state.rounds[currentIdx] || state.rounds[0];
+      const next = state.rounds[currentIdx+1] || state.rounds[currentIdx];
+
+      // update UI ids and timers
+      currentRoundIdEl.textContent = `#${current.id}`;
+      nextRoundIdEl.textContent = `#${next.id}`;
+      currentTimerEl.textContent = formatTimeLeft(current.startTs - now);
+      nextTimerEl.textContent = formatTimeLeft(next.startTs - now);
+
+      // If current round passed and not settled -> settle it
+      if(now >= current.startTs && !current.result){
+        settleRound(current);
+      }
+
+      // ensure rounds ahead
+      ensureRoundsAhead();
+      renderRoundsList();
+    }
+
+    function settleRound(rnd){
+      // random result
+      const choices = ['Red','Blue','Green'];
+      const winner = choices[Math.floor(Math.random()*choices.length)];
+      rnd.result = winner;
+      // process bets
+      let betsSummary = [];
+      rnd.bets.forEach(b=>{
+        betsSummary.push(`${b.color} ₹${b.amount}`);
+        if(b.color === winner){
+          const payout = Math.round(b.amount * PAYOUT_MULT);
+          state.balance += payout;
+          renderTx(`Round #${rnd.id} → ${winner}. Payout ₹${payout} (bet ₹${b.amount})`);
+        } else {
+          renderTx(`Round #${rnd.id} → ${winner}. Lost ₹${b.amount} on ${b.color}`);
+        }
+      });
+      state.history.push({ roundId: rnd.id, result: winner, betsSummary: betsSummary.join(', ') });
+      saveState();
+      renderBalance();
+      renderResults();
+    }
+
+    // UI buttons
+    document.getElementById('addFunds').addEventListener('click', ()=>{
+      state.balance += 500;
+      saveState(); renderBalance(); renderTx('Added ₹500 demo funds');
+    });
+
+    document.getElementById('placeNowBtn').addEventListener('click', ()=>{
+      const targetId = Number(selectRound.value);
+      // place immediate bet on selected round (if it's the current open round)
+      placeBet('Red', targetId); // default placeholder to show usage; user should use color buttons
+    });
+
+    // quick color buttons place bet on next round
+    function placeBet(color){
+      const next = state.rounds.find(r=> r.result===null && r.startTs > Math.floor(Date.now()/1000));
+      if(!next){ alert('Next round nahi mila'); return; }
+      placeBetOnRound(color, next.id);
+    }
+
+    function placeBetOnRound(color, roundId){
+      // use same logic as placeBet with param names
+      const betAmt = Number(document.getElementById('betAmount').value) || DEFAULT_BET;
+      if(betAmt <= 0){ alert('Bet amount valid number chahiye'); return; }
+      if(state.balance < betAmt){ alert('Balance kam hai. Add funds.'); return; }
+      const rnd = state.rounds.find(r=>r.id==roundId);
+      if(!rnd){ alert('Round nahin mila'); return; }
+      const now = Math.floor(Date.now()/1000);
+      if(now >= rnd.startTs){ alert('Is round pe bet close ho chuka hai'); return; }
+      state.balance -= betAmt;
+      rnd.bets.push({ color, amount: betAmt });
+      renderTx(`Placed ₹${betAmt} on ${color} for round #${rnd.id} (pending)`);
+      saveState(); renderBalance(); renderRoundsList(); renderResults();
+    }
+
+    // expose simpler global for color buttons in tiles
+    window.placeBet = function(color){ placeBet(color); }
+
+    // initial seed and UI render
+    seedRounds();
+    renderBalance();
+    renderResults();
+    renderRoundsList();
+    tick();
+    // run tick every second
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
